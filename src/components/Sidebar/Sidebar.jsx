@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const navigationItems = [
   {
@@ -6,6 +7,7 @@ const navigationItems = [
     label: "Patient",
     icon: "https://cdn.builder.io/api/v1/image/assets/b84dd30bad284682bdd2468de5480c9b/c9ba4e55d7c83518314dd048a386f4c5739affed3dee0414b999c8eafc4301d6?apiKey=b84dd30bad284682bdd2468de5480c9b&",
     className: "text-sky-500 bg-sky-100",
+    path: "/",
   },
   {
     id: "language",
@@ -18,6 +20,7 @@ const navigationItems = [
     label: "Tutorial",
     icon: "https://cdn.builder.io/api/v1/image/assets/b84dd30bad284682bdd2468de5480c9b/69deb4e58d3ba3b1fd89fc9a93a765a394b3be5a2b370cd459551383f9f5750b?apiKey=b84dd30bad284682bdd2468de5480c9b&",
     className: "bg-neutral-50",
+    path: "/tutorial",
   },
   {
     id: "settings",
@@ -33,12 +36,55 @@ const navigationItems = [
   },
 ];
 
-function NavigationItem({ icon, label, className, id, collapsed }) {
+const languages = [
+  "English",
+  "German",
+  "French",
+  "Italian",
+  "Spanish",
+  "Portuguese",
+  "Hindi",
+  "Japanese",
+  "Chinese",
+];
+
+function NavigationItem({ icon, label, className, id, collapsed, language, setLanguage, path }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
+  const handleLanguageSelect = (selectedLanguage) => {
+    setLanguage(selectedLanguage);
+    setDropdownOpen(false);
+  };
+
+  const handleNavigation = () => {
+    if (path) navigate(path);
+  };
+
   return (
     <div
+      ref={id === "language" ? dropdownRef : null}
       role="button"
       tabIndex={0}
-      className={`flex items-center px-3.5 py-3 rounded-md ${
+      className={`relative flex items-center px-3.5 py-3 rounded-md ${
         collapsed ? "justify-center" : "gap-7"
       } ${className}`}
       aria-label={label}
@@ -47,6 +93,7 @@ function NavigationItem({ icon, label, className, id, collapsed }) {
           e.preventDefault();
         }
       }}
+      onClick={() => (id === "language" ? setDropdownOpen(!dropdownOpen) : handleNavigation())}
     >
       <img
         loading="lazy"
@@ -54,7 +101,25 @@ function NavigationItem({ icon, label, className, id, collapsed }) {
         alt=""
         className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
       />
-      {!collapsed && <div className="self-stretch my-auto">{label}</div>}
+      {!collapsed && (
+        <div className="self-stretch my-auto">
+          {id === "language" ? language : label}
+        </div>
+      )}
+      {/* Dropdown for Language */}
+      {id === "language" && dropdownOpen && (
+        <div className="absolute left-0 mt-[27rem] w-44 bg-white border rounded shadow-lg z-10">
+          {languages.map((lang) => (
+            <div
+              key={lang}
+              className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+              onClick={() => handleLanguageSelect(lang)}
+            >
+              {lang}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -62,6 +127,7 @@ function NavigationItem({ icon, label, className, id, collapsed }) {
 function SideNavigation() {
   const [collapsed, setCollapsed] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [language, setLanguage] = useState("English");
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
@@ -77,7 +143,7 @@ function SideNavigation() {
       <div className="md:block hidden absolute z-[999] ">
         <nav
           className={`flex flex-col px-5 pt-24 pb-7 text-base font-semibold whitespace-nowrap bg-white rounded-sm shadow-[6px_6px_14px_rgba(0,0,0,0.25)] text-stone-300 transition-all duration-300 ${
-            collapsed ? "w-28" : "w-64"
+            collapsed ? "w-40" : "w-[17rem]"
           }`}
           role="navigation"
           aria-label="Main navigation"
@@ -99,6 +165,8 @@ function SideNavigation() {
                 index > 0 ? "mt-6" : ""
               } ${item.id === "logout" ? "mt-32" : ""}`}
               collapsed={collapsed}
+              language={language}
+              setLanguage={setLanguage}
             />
           ))}
         </nav>
@@ -133,6 +201,8 @@ function SideNavigation() {
               key={item.id}
               {...item}
               className={`${item.className} mt-6`}
+              language={language}
+              setLanguage={setLanguage}
             />
           ))}
         </nav>

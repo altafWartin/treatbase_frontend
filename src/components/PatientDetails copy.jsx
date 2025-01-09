@@ -18,9 +18,9 @@ export default function PatientDetails() {
         preOp: false,
         postOp: false,
     });
-    const currentDate = new Date(); // Get the current date
 
 
+    console.log(formData.gender);
     const [recording, setRecording] = useState(false);
     const [audioBlob, setAudioBlob] = useState(null);
     const [uploadStatus, setUploadStatus] = useState("");
@@ -53,47 +53,73 @@ export default function PatientDetails() {
     };
 
     const handleStartRecording = async () => {
+        console.log("1. Start the function handleStartRecording");
+
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            console.log("2. Audio recording is not supported in this browser.");
             alert("Audio recording is not supported in this browser.");
             return;
         }
 
+        console.log("3. Requesting audio stream from user");
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("4. Audio stream received successfully");
+
         const mediaRecorder = new MediaRecorder(stream);
+        console.log("5. MediaRecorder initialized");
+
         const audioChunks = [];
         const audioContext = new AudioContext();
+        console.log("6. AudioContext initialized");
+
         const source = audioContext.createMediaStreamSource(stream);
+        console.log("7. MediaStreamSource created");
+
         const analyser = audioContext.createAnalyser();
         analyser.fftSize = 256;
+        console.log("8. Analyser initialized with FFT size", analyser.fftSize);
 
         source.connect(analyser);
+        console.log("9. Source connected to analyser");
+
         const dataArray = new Uint8Array(analyser.fftSize);
         let silenceTimer = null;
+        setRecording(true);
+        console.log("10. Recording state set to true");
 
-        let manualStop = false; // State to track manual stop
+        const sendAudioChunk = async () => {
+            console.log("11. Checking if there are audio chunks to send");
+            if (audioChunks.length > 0) {
+                console.log("12. Creating a Blob from audioChunks");
+                const audioBlob = new Blob(audioChunks, { type: "audio/mpeg" });
+                setAudioBlob(audioBlob);
 
-        setRecording(true); // Set recording state to true
+                console.log("13. Sending audio chunk to the server");
+                await handleUpload(audioBlob);
 
-        const sendAudioChunkInBackground = async (audioBlob) => {
-            // Background upload
-            handleUpload(audioBlob).catch((error) => {
-                console.error("Error uploading audio chunk:", error);
-            });
+                audioChunks.length = 0; // Clear the chunks for the next recording
+                console.log("14. Cleared audioChunks after sending");
+            } else {
+                console.log("15. No audio chunks to send");
+            }
         };
 
         const checkSilence = () => {
+            console.log("16. Checking for silence in audio stream");
             analyser.getByteFrequencyData(dataArray);
             const volume = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+            console.log("17. Current volume:", volume);
 
             if (volume < 10) {
-                // Silence detected
+                console.log("18. Silence detected, starting silence timer");
                 if (!silenceTimer) {
-                    silenceTimer = setTimeout(() => {
-                        mediaRecorder.stop(); // Stop current recording
-                    }, 1000); // 1 second silence threshold
+                    silenceTimer = setTimeout(async () => {
+                        console.log("19. Silence timer expired, stopping mediaRecorder");
+                        mediaRecorder.stop();
+                    }, 1000); // Stop recording after 1 second of silence
                 }
             } else {
-                // Sound detected, clear silence timer
+                console.log("20. Sound detected, resetting silence timer if active");
                 if (silenceTimer) {
                     clearTimeout(silenceTimer);
                     silenceTimer = null;
@@ -101,46 +127,39 @@ export default function PatientDetails() {
             }
 
             if (mediaRecorder.state === "recording") {
-                requestAnimationFrame(checkSilence); // Continue checking for silence
+                console.log("21. MediaRecorder is recording, continuing silence check");
+                requestAnimationFrame(checkSilence);
+            } else {
+                console.log("22. MediaRecorder is not recording, stopping silence check");
             }
         };
 
         mediaRecorder.ondataavailable = (event) => {
+            console.log("23. Data available from mediaRecorder");
             audioChunks.push(event.data);
+            console.log("24. Pushed new audio chunk to audioChunks");
         };
 
-        mediaRecorder.onstop = () => {
-            // Send audio chunk in the background
-            if (audioChunks.length > 0) {
-                const audioBlob = new Blob(audioChunks, { type: "audio/mpeg" });
-                sendAudioChunkInBackground(audioBlob); // Upload in the background
-                audioChunks.length = 0; // Clear audio chunks
-            }
+        mediaRecorder.onstop = async () => {
+            console.log("25. MediaRecorder stopped, sending audio chunk");
+            await sendAudioChunk();
 
-            if (!manualStop) {
-                // Restart recording automatically if not manually stopped
+            if (recording) {
+                console.log("26. Restarting MediaRecorder for new recording");
                 mediaRecorder.start();
                 checkSilence();
+            } else {
+                console.log("27. Recording stopped, cleaning up resources");
+                stream.getTracks().forEach((track) => track.stop());
+                audioContext.close();
+                console.log("28. AudioContext closed");
             }
         };
 
-        mediaRecorder.start(); // Start the initial recording
-        checkSilence(); // Start silence detection
-
-        // Manual stop function
-        const handleManualStop = () => {
-            manualStop = true; // Mark as manually stopped
-            setRecording(false); // Update state to reflect stopped recording
-            mediaRecorder.stop(); // Stop recording
-            stream.getTracks().forEach((track) => track.stop()); // Stop the microphone stream
-            audioContext.close(); // Close the audio context
-        };
-
-        // Attach the stop function to a button or UI event
-        window.handleStopRecording = handleManualStop;
+        console.log("29. Starting MediaRecorder");
+        mediaRecorder.start();
+        checkSilence();
     };
-
-
 
     const handleStopRecording = () => {
         console.log("30. handleStopRecording called, setting recording to false");
@@ -156,54 +175,25 @@ export default function PatientDetails() {
             return;
         }
 
+        const formData = new FormData();
+        console.log("33. Appending audio blob to FormData");
+        formData.append("audio_file", audioBlob, "recording.mp3");
+
         try {
-            const audioFile = new File([audioBlob], "recording.mp3", { type: "audio/mpeg" });
-
-            // Create FormData and append the file and model name
-            const transcriptFormData = new FormData();
-            transcriptFormData.append("file", audioFile);
-            transcriptFormData.append("model", "whisper-1"); // Specify the model name
-
-            transcriptFormData.append("language", "en"); // Explicitly set transcription language to English
-
-            // Make the API call to OpenAI Whisper API
-            const transcriptResponse = await axios.post(
-                "https://api.openai.com/v1/audio/transcriptions",
-                transcriptFormData,
+            console.log("34. Sending audio blob to server");
+            setUploadStatus("Uploading...");
+            const response = await axios.post(
+                `http://ec2-13-201-101-178.ap-south-1.compute.amazonaws.com:8000/api/v1/patient/extract_patient_info?uid=${uid}`,
+                formData,
                 {
                     headers: {
                         "Content-Type": "multipart/form-data",
-                        Authorization: `Bearer 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`, // Replace with your OpenAI API key
+                        accept: "application/json",
                     },
                 }
             );
 
-
-            // Step 1: Extract the transcript from the OpenAI response
-            const transcript = transcriptResponse.data.text;
-            console.log("34. Transcript received:", transcript);
-
-            // Step 2: Prepare the transcript for your server
-            console.log("35. Sending transcript to server...");
-            const serverFormData = new FormData();
-            serverFormData.append("transcript", transcript);
-
-            // Step 3: Send transcript to the server API
-            const response = await axios.post(
-                `http://ec2-13-201-101-178.ap-south-1.compute.amazonaws.com:8000/api/v1/patient/extract_patient_info?uid=${uid}`,
-                serverFormData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data", // Specify multipart content type
-                        accept: "application/json", // Accept JSON responses from the server
-                    },
-                }
-            );
-
-            // Step 4: Handle successful response
-            console.log("36. Server responded successfully:", response.data);
-
-            // Update your state or perform any other action based on the response
+            console.log("35. Server responded successfully:", response.data);
             const data = response.data;
 
             calculateAge(data.date_of_birth);
@@ -219,13 +209,12 @@ export default function PatientDetails() {
                 postOp: data.examination_type?.toLowerCase() === "post-op",
             }));
             setUploadStatus("Upload successful!");
-            console.log("37. Form data updated successfully");
+            console.log("36. Form data updated successfully");
         } catch (error) {
-            console.error("38. Error during transcription or upload:", error);
+            console.error("37. Error uploading file:", error);
             setUploadStatus("Upload failed.");
         }
     };
-
 
 
     const genderOptions = [
@@ -311,7 +300,6 @@ export default function PatientDetails() {
                 <div className="flex justify-between items-center  mb-4">
                     <div className="flex w-[75%]  flex-col  max-md:w-full">
                         <label htmlFor="dateOfBirth" className="text-sm font-medium text-zinc-800">Date of Birth</label>
-
                         <Calendar
                             id="dateOfBirth"
                             value={formData.dateOfBirth ? new Date(formData.dateOfBirth) : null}
@@ -327,7 +315,6 @@ export default function PatientDetails() {
                             aria-label="Date of Birth"
                             dateFormat="yy-mm-dd"
                             showIcon
-                            maxDate={currentDate} // Prevent future date selection
                         />
                     </div>
                     <div className="flex flex-col w-[20%]">

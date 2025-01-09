@@ -3,8 +3,8 @@ import Table from './Table';
 
 const MainTable = () => {
     return (
-        <div className="w-full h-[50rem] px-3 mb-24 flex overflow-x-auto">
-            <div className="w-[13%] bg-blue-200 min-w-[120px]">
+        <div className="w-full h-[50rem]  px-3 mb-24 flex overflow-x-auto">
+            <div className="w-[13%]  min-w-[120px]">
                 <div className="flex text-sm flex-col mr-5 justify-center items-end mt-2 gap-[1.07rem]">
                     <div>Tooth No</div>
                     <div>Tooth Presence</div>

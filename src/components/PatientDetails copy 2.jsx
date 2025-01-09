@@ -21,6 +21,7 @@ export default function PatientDetails() {
     const currentDate = new Date(); // Get the current date
 
 
+    console.log(formData.gender);
     const [recording, setRecording] = useState(false);
     const [audioBlob, setAudioBlob] = useState(null);
     const [uploadStatus, setUploadStatus] = useState("");
@@ -57,7 +58,7 @@ export default function PatientDetails() {
             alert("Audio recording is not supported in this browser.");
             return;
         }
-
+    
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const mediaRecorder = new MediaRecorder(stream);
         const audioChunks = [];
@@ -65,26 +66,26 @@ export default function PatientDetails() {
         const source = audioContext.createMediaStreamSource(stream);
         const analyser = audioContext.createAnalyser();
         analyser.fftSize = 256;
-
+    
         source.connect(analyser);
         const dataArray = new Uint8Array(analyser.fftSize);
         let silenceTimer = null;
-
+    
         let manualStop = false; // State to track manual stop
-
+    
         setRecording(true); // Set recording state to true
-
+    
         const sendAudioChunkInBackground = async (audioBlob) => {
             // Background upload
             handleUpload(audioBlob).catch((error) => {
                 console.error("Error uploading audio chunk:", error);
             });
         };
-
+    
         const checkSilence = () => {
             analyser.getByteFrequencyData(dataArray);
             const volume = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-
+    
             if (volume < 10) {
                 // Silence detected
                 if (!silenceTimer) {
@@ -99,16 +100,16 @@ export default function PatientDetails() {
                     silenceTimer = null;
                 }
             }
-
+    
             if (mediaRecorder.state === "recording") {
                 requestAnimationFrame(checkSilence); // Continue checking for silence
             }
         };
-
+    
         mediaRecorder.ondataavailable = (event) => {
             audioChunks.push(event.data);
         };
-
+    
         mediaRecorder.onstop = () => {
             // Send audio chunk in the background
             if (audioChunks.length > 0) {
@@ -116,17 +117,17 @@ export default function PatientDetails() {
                 sendAudioChunkInBackground(audioBlob); // Upload in the background
                 audioChunks.length = 0; // Clear audio chunks
             }
-
+    
             if (!manualStop) {
                 // Restart recording automatically if not manually stopped
                 mediaRecorder.start();
                 checkSilence();
             }
         };
-
+    
         mediaRecorder.start(); // Start the initial recording
         checkSilence(); // Start silence detection
-
+    
         // Manual stop function
         const handleManualStop = () => {
             manualStop = true; // Mark as manually stopped
@@ -135,12 +136,12 @@ export default function PatientDetails() {
             stream.getTracks().forEach((track) => track.stop()); // Stop the microphone stream
             audioContext.close(); // Close the audio context
         };
-
+    
         // Attach the stop function to a button or UI event
         window.handleStopRecording = handleManualStop;
     };
-
-
+    
+    
 
     const handleStopRecording = () => {
         console.log("30. handleStopRecording called, setting recording to false");
@@ -156,54 +157,25 @@ export default function PatientDetails() {
             return;
         }
 
+        const formData = new FormData();
+        console.log("33. Appending audio blob to FormData");
+        formData.append("audio_file", audioBlob, "recording.mp3");
+
         try {
-            const audioFile = new File([audioBlob], "recording.mp3", { type: "audio/mpeg" });
-
-            // Create FormData and append the file and model name
-            const transcriptFormData = new FormData();
-            transcriptFormData.append("file", audioFile);
-            transcriptFormData.append("model", "whisper-1"); // Specify the model name
-
-            transcriptFormData.append("language", "en"); // Explicitly set transcription language to English
-
-            // Make the API call to OpenAI Whisper API
-            const transcriptResponse = await axios.post(
-                "https://api.openai.com/v1/audio/transcriptions",
-                transcriptFormData,
+            console.log("34. Sending audio blob to server");
+            setUploadStatus("Uploading...");
+            const response = await axios.post(
+                `http://ec2-13-201-101-178.ap-south-1.compute.amazonaws.com:8000/api/v1/patient/extract_patient_info?uid=${uid}`,
+                formData,
                 {
                     headers: {
                         "Content-Type": "multipart/form-data",
-                        Authorization: `Bearer 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`, // Replace with your OpenAI API key
+                        accept: "application/json",
                     },
                 }
             );
 
-
-            // Step 1: Extract the transcript from the OpenAI response
-            const transcript = transcriptResponse.data.text;
-            console.log("34. Transcript received:", transcript);
-
-            // Step 2: Prepare the transcript for your server
-            console.log("35. Sending transcript to server...");
-            const serverFormData = new FormData();
-            serverFormData.append("transcript", transcript);
-
-            // Step 3: Send transcript to the server API
-            const response = await axios.post(
-                `http://ec2-13-201-101-178.ap-south-1.compute.amazonaws.com:8000/api/v1/patient/extract_patient_info?uid=${uid}`,
-                serverFormData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data", // Specify multipart content type
-                        accept: "application/json", // Accept JSON responses from the server
-                    },
-                }
-            );
-
-            // Step 4: Handle successful response
-            console.log("36. Server responded successfully:", response.data);
-
-            // Update your state or perform any other action based on the response
+            console.log("35. Server responded successfully:", response.data);
             const data = response.data;
 
             calculateAge(data.date_of_birth);
@@ -219,13 +191,12 @@ export default function PatientDetails() {
                 postOp: data.examination_type?.toLowerCase() === "post-op",
             }));
             setUploadStatus("Upload successful!");
-            console.log("37. Form data updated successfully");
+            console.log("36. Form data updated successfully");
         } catch (error) {
-            console.error("38. Error during transcription or upload:", error);
+            console.error("37. Error uploading file:", error);
             setUploadStatus("Upload failed.");
         }
     };
-
 
 
     const genderOptions = [
@@ -311,24 +282,24 @@ export default function PatientDetails() {
                 <div className="flex justify-between items-center  mb-4">
                     <div className="flex w-[75%]  flex-col  max-md:w-full">
                         <label htmlFor="dateOfBirth" className="text-sm font-medium text-zinc-800">Date of Birth</label>
-
-                        <Calendar
-                            id="dateOfBirth"
-                            value={formData.dateOfBirth ? new Date(formData.dateOfBirth) : null}
-                            onChange={(e) => {
-                                const selectedDate = e.value;
-                                if (selectedDate) {
-                                    const formattedDate = selectedDate.toISOString().split("T")[0];
-                                    handleInputChange("dateOfBirth", formattedDate);
-                                    handleInputChange("age", calculateAge(formattedDate));
-                                }
-                            }}
-                            className="h-12 px-3 mt-1 bg-white rounded-lg border border-zinc-300 hover:border-sky-500 focus:border-sky-500 focus:ring-2 focus:ring-sky-500 w-full transition-all duration-300"
-                            aria-label="Date of Birth"
-                            dateFormat="yy-mm-dd"
-                            showIcon
-                            maxDate={currentDate} // Prevent future date selection
-                        />
+                      
+<Calendar
+    id="dateOfBirth"
+    value={formData.dateOfBirth ? new Date(formData.dateOfBirth) : null}
+    onChange={(e) => {
+        const selectedDate = e.value;
+        if (selectedDate) {
+            const formattedDate = selectedDate.toISOString().split("T")[0];
+            handleInputChange("dateOfBirth", formattedDate);
+            handleInputChange("age", calculateAge(formattedDate));
+        }
+    }}
+    className="h-12 px-3 mt-1 bg-white rounded-lg border border-zinc-300 hover:border-sky-500 focus:border-sky-500 focus:ring-2 focus:ring-sky-500 w-full transition-all duration-300"
+    aria-label="Date of Birth"
+    dateFormat="yy-mm-dd"
+    showIcon
+    maxDate={currentDate} // Prevent future date selection
+/>
                     </div>
                     <div className="flex flex-col w-[20%]">
                         <label htmlFor="age" className="text-sm font-medium text-zinc-800">Age</label>

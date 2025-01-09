@@ -1,45 +1,46 @@
 import React, { useState } from 'react';
-import FullCircle from '../../assets/FullCircle.svg';
-import HalfCircle from '../../assets/HalfCircle.svg';
-import EmptyCircle from '../../assets/EmptyCircle.svg';
-import Buccal1 from '../../assets/UpparBuccal/Buccal1.svg'
-import Buccal2 from '../../assets/UpparBuccal/Buccal2.svg'
-import Buccal3 from '../../assets/UpparBuccal/Buccal3.svg'
-import Buccal4 from '../../assets/UpparBuccal/Buccal4.svg'
-import Buccal5 from '../../assets/UpparBuccal/Buccal5.svg'
-import Buccal6 from '../../assets/UpparBuccal/Buccal6.svg'
-import Buccal7 from '../../assets/UpparBuccal/Buccal7.svg'
-import Buccal8 from '../../assets/UpparBuccal/Buccal8.svg'
-import Buccal9 from '../../assets/UpparBuccal/Buccal9.svg'
-import Buccal10 from '../../assets/UpparBuccal/Buccal10.svg'
-import Buccal11 from '../../assets/UpparBuccal/Buccal11.svg'
-import Buccal12 from '../../assets/UpparBuccal/Buccal12.svg'
-import Buccal13 from '../../assets/UpparBuccal/Buccal13.svg'
-import Buccal14 from '../../assets/UpparBuccal/Buccal14.svg'
-import Buccal15 from '../../assets/UpparBuccal/Buccal15.svg'
-import Buccal16 from '../../assets/UpparBuccal/Buccal16.svg'
-import I1 from "../../assets/UpparBuccal/I1.svg";
-import I2 from "../../assets/UpparBuccal/I2.svg";
-import I3 from "../../assets/UpparBuccal/I3.svg";
-import I4 from "../../assets/UpparBuccal/I4.svg";
-import I5 from "../../assets/UpparBuccal/I5.svg";
-import I6 from "../../assets/UpparBuccal/I6.svg";
-import I7 from "../../assets/UpparBuccal/I7.svg";
-import I8 from "../../assets/UpparBuccal/I8.svg";
-import I9 from "../../assets/UpparBuccal/I9.svg";
-import I10 from "../../assets/UpparBuccal/I10.svg";
-import I11 from "../../assets/UpparBuccal/I11.svg";
-import I12 from "../../assets/UpparBuccal/I12.svg";
-import I13 from "../../assets/UpparBuccal/I13.svg";
-import I14 from "../../assets/UpparBuccal/I14.svg";
-import I15 from "../../assets/UpparBuccal/I15.svg";
-import I16 from "../../assets/UpparBuccal/I16.svg";
+import FullCircle from '../../../../assets/FullCircle.svg';
+import HalfCircle from '../../../../assets/HalfCircle.svg';
+import EmptyCircle from '../../../../assets/EmptyCircle.svg';
+import Buccal1 from '../../../../assets/UpparBuccal/Buccal1.svg'
+import Buccal2 from '../../../../assets/UpparBuccal/Buccal2.svg'
+import Buccal3 from '../../../../assets/UpparBuccal/Buccal3.svg'
+import Buccal4 from '../../../../assets/UpparBuccal/Buccal4.svg'
+import Buccal5 from '../../../../assets/UpparBuccal/Buccal5.svg'
+import Buccal6 from '../../../../assets/UpparBuccal/Buccal6.svg'
+import Buccal7 from '../../../../assets/UpparBuccal/Buccal7.svg'
+import Buccal8 from '../../../../assets/UpparBuccal/Buccal8.svg'
+import Buccal9 from '../../../../assets/UpparBuccal/Buccal9.svg'
+import Buccal10 from '../../../../assets/UpparBuccal/Buccal10.svg'
+import Buccal11 from '../../../../assets/UpparBuccal/Buccal11.svg'
+import Buccal12 from '../../../../assets/UpparBuccal/Buccal12.svg'
+import Buccal13 from '../../../../assets/UpparBuccal/Buccal13.svg'
+import Buccal14 from '../../../../assets/UpparBuccal/Buccal14.svg'
+import Buccal15 from '../../../../assets/UpparBuccal/Buccal15.svg'
+import Buccal16 from '../../../../assets/UpparBuccal/Buccal16.svg'
+import I1 from "../../../../assets/UpparBuccal/I1.svg";
+import I2 from "../../../../assets/UpparBuccal/I2.svg";
+import I3 from "../../../../assets/UpparBuccal/I3.svg";
+import I4 from "../../../../assets/UpparBuccal/I4.svg";
+import I5 from "../../../../assets/UpparBuccal/I5.svg";
+import I6 from "../../../../assets/UpparBuccal/I6.svg";
+import I7 from "../../../../assets/UpparBuccal/I7.svg";
+import I8 from "../../../../assets/UpparBuccal/I8.svg";
+import I9 from "../../../../assets/UpparBuccal/I9.svg";
+import I10 from "../../../../assets/UpparBuccal/I10.svg";
+import I11 from "../../../../assets/UpparBuccal/I11.svg";
+import I12 from "../../../../assets/UpparBuccal/I12.svg";
+import I13 from "../../../../assets/UpparBuccal/I13.svg";
+import I14 from "../../../../assets/UpparBuccal/I14.svg";
+import I15 from "../../../../assets/UpparBuccal/I15.svg";
+import I16 from "../../../../assets/UpparBuccal/I16.svg";
 
-import I1png from "../../assets/UpparBuccal/I1png.png";
+import I1png from "../../../../assets/UpparBuccal/I1png.png";
 
 
 
-const Table = () => {
+
+const UpperBuccalTable = () => {
     const [toothPresence, setToothPresence] = useState(Array(16).fill('P'));
     const [furcationStatus, setFurcationStatus] = useState(Array(16).fill(''));
     const [bleedingStatus, setBleedingStatus] = useState(
@@ -60,9 +61,8 @@ const Table = () => {
     const [probingDepth, setProbingDepth] = useState(Array(16).fill([0, 0, 0])); // 3 values per tooth
 
 
-    console.log(gingivalMargin);
 
-    
+
     // Update Gingival Margin
     const updateGingivalMargin = (toothIndex, pos, value) => {
         setGingivalMargin((prev) => {
@@ -155,12 +155,12 @@ const Table = () => {
 
 
     return (
-        <div className="w-full h-full border border-black bg-[#F2F9FF] flex items-center justify-center">
+        <div className="w-full  border  border-b-0 bg-[#F2F9FF] flex items-center justify-center">
             <div className="flex w-full h-full">
                 {Array.from({ length: 16 }).map((_, index) => (
                     <div
                         key={index}
-                        className={`w-full border border-black h-full ${index === 7 ? 'mr-[25px]' : ''}`}
+                        className={`w-full border  h-full ${index === 7 ? 'mr-[25px]' : ''}`}
                     >
                         <div className="flex h-10 justify-center items-center">{index + 1}</div>
 
@@ -268,41 +268,8 @@ const Table = () => {
 
 
                             ))}
-                            {/* Blue Line */}
-                            {/* Dark Blue Line */}
-                            <div className='absolute w-full h-full z-10'>
-
-                   
-                                {Array.from({ length: 16 }).map((_, index) => (
-                                    <div key={index} className="relative w-full">
-                                        {/* Gingival Margin Lines */}
-                                        {gingivalMargin[index].map((value, pos) => (
-                                            <hr
-                                                key={`gingival-${index}-${pos}`}
-                                                className="absolute w-full border-t-2 z-20"
-                                                style={{
-                                                    borderColor: '#00008B', // Dark Blue
-                                                    top: `${50 - value * 5}%`, // Adjust the multiplier for scaling
-                                                }}
-                                            />
-                                        ))}
-
-                                        {/* Probing Depth Lines */}
-                                        {probingDepth[index].map((value, pos) => (
-                                            <hr
-                                                key={`probing-${index}-${pos}`}
-                                                className="absolute w-full border-t-2 z-20"
-                                                style={{
-                                                    borderColor: '#8B0000', // Dark Red
-                                                    top: `${50 + value * 5}%`, // Adjust the multiplier for scaling
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                ))}
-                           
-                           </div>
-
+                       
+                         
 
                             {/* Conditional Image Rendering */}
                             {toothPresence[index] === 'P' ? (
@@ -329,7 +296,7 @@ const Table = () => {
                                 </div>
                             )}
                         </div>
-
+                      
 
                     </div>
                 ))}
@@ -338,4 +305,4 @@ const Table = () => {
     );
 };
 
-export default Table;
+export default UpperBuccalTable;

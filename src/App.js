@@ -1,31 +1,46 @@
-import React from 'react';
-import Chart from './components/Chart';
-import { Header } from './components/Header/Header';
-import Sidebar from './components/Sidebar/Sidebar';
-import PatientDetails from './components/PatientDetails';
-import PropertyIndex from './components/PropertyIndex/PropertyIndex';
-import PropertyIndexTable from './components/PropertyIndex/PropertyIndex';
-import MainTable from './components/MainTable/MainTable';
-import SideNavigation from './components/Sidebar/Sidebar';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import SideNavigation from "./components/Sidebar/Sidebar";
+import { Header } from "./components/Header/Header";
+import PatientDetails from "./components/PatientDetails";
+import MainTable from "./components/MainTable/MainTable";
+import Tutorial from "./pages/Tutorial/Tutorial";
+import Home from "./pages/Home/Home";
+
+
+// Dummy components for each route
+function Patient() {
+  return <Home />;
+}
+function Language() {
+  return <div>Language Page</div>;
+}
+
+function Settings() {
+  return <div>Settings Page</div>;
+}
+function Logout() {
+  return <div>Logout Page</div>;
+}
 
 function App() {
   return (
-
-    <div>
+    <Router>
       <Header />
-      <SideNavigation />
-      <div className=" flex  justify-center ">
-        <div className='w-full flex flex-col justify-center items-center  gap-10'>
-
-          <PatientDetails />
-          <PropertyIndexTable />
-          {/* <MainTable/> */}
-          <MainTable/>
+      <div className="flex">
+        <SideNavigation />
+        <div className="flex-1 p-4">
+          <Routes>
+            <Route path="/patient" element={<Patient />} />
+            <Route path="/language" element={<Language />} />
+            <Route path="/tutorial" element={<Tutorial />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/" element={<Patient />} />
+          </Routes>
         </div>
-        {/* <h1 className="text-4xl font-semibold text-gray-800 mb-8">Periodontal Chart</h1> */}
-        {/* <Chart /> */}
       </div>
-    </div>
+    </Router>
   );
 }
 

@@ -11,12 +11,11 @@ export function Header() {
         aria-label="Company Logo"
       />
       <div
-        className="flex justify-center items-center flex-grow my-auto max-md:max-w-full text-center"
+        className="flex justify-center items-center pr-24 flex-grow my-auto max-md:max-w-full text-center"
         role="heading"
         aria-level="1"
       >
-        Header
-      </div>
+        PerioDelphi      </div>
     </div>
   );
 }
