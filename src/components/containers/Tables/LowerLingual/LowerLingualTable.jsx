@@ -41,6 +41,42 @@ import UP1 from "../../../../assets/UpparPalatalImages/UP1.svg";
 
 
 
+import LL1 from "../../../../assets/LowerLingual/LL1.svg";
+import LL2 from "../../../../assets/LowerLingual/LL2.svg";
+import LL3 from "../../../../assets/LowerLingual/LL3.svg";
+import LL4 from "../../../../assets/LowerLingual/LL4.svg";
+import LL5 from "../../../../assets/LowerLingual/LL5.svg";
+import LL6 from "../../../../assets/LowerLingual/LL6.svg";
+import LL7 from "../../../../assets/LowerLingual/LL7.svg";
+import LL8 from "../../../../assets/LowerLingual/LL8.svg";
+import LL9 from "../../../../assets/LowerLingual/LL9.svg";
+import LL10 from "../../../../assets/LowerLingual/LL10.svg";
+import LL11 from "../../../../assets/LowerLingual/LL11.svg";
+import LL12 from "../../../../assets/LowerLingual/LL12.svg";
+import LL13 from "../../../../assets/LowerLingual/LL13.svg";
+import LL14 from "../../../../assets/LowerLingual/LL14.svg";
+import LL15 from "../../../../assets/LowerLingual/LL15.svg";
+import LL16 from "../../../../assets/LowerLingual/LL16.svg";
+
+import LLI1 from "../../../../assets/LowerLingual/LLI1.svg";
+import LLI2 from "../../../../assets/LowerLingual/LLI2.svg";
+import LLI3 from "../../../../assets/LowerLingual/LLI3.svg";
+import LLI4 from "../../../../assets/LowerLingual/LLI4.svg";
+import LLI5 from "../../../../assets/LowerLingual/LLI5.svg";
+import LLI6 from "../../../../assets/LowerLingual/LLI6.svg";
+import LLI7 from "../../../../assets/LowerLingual/LLI7.svg";
+import LLI8 from "../../../../assets/LowerLingual/LLI8.svg";
+import LLI9 from "../../../../assets/LowerLingual/LLI9.svg";
+import LLI10 from "../../../../assets/LowerLingual/LLI10.svg";
+import LLI11 from "../../../../assets/LowerLingual/LLI11.svg";
+import LLI12 from "../../../../assets/LowerLingual/LLI12.svg";
+import LLI13 from "../../../../assets/LowerLingual/LLI13.svg";
+import LLI14 from "../../../../assets/LowerLingual/LLI14.svg";
+import LLI15 from "../../../../assets/LowerLingual/LLI15.svg";
+import LLI16 from "../../../../assets/LowerLingual/LLI16.svg"
+
+
+
 const LowerLingualTable = () => {
     const [toothPresence, setToothPresence] = useState(Array(16).fill('P'));
     const [furcationStatus, setFurcationStatus] = useState(Array(16).fill({ left: '', right: '' }));
@@ -88,24 +124,10 @@ const LowerLingualTable = () => {
 
     const [directionStatus, setDirectionStatus] = useState(Array(16).fill(''));
 
-    const buccalImages = [Buccal1, Buccal2,
-        Buccal3,
-        Buccal4,
-        Buccal5,
-        Buccal6,
-        Buccal7,
-        Buccal8,
-        Buccal9,
-        Buccal10,
-        Buccal11,
-        Buccal12,
-        Buccal13,
-        Buccal14,
-        Buccal15,
-        Buccal16,
-    ];
+    const lowerLingual = [LL1, LL2, LL3, LL4, LL5, LL6, LL7, LL8, LL9, LL10, LL11, LL12, LL13, LL14, LL15, LL16];
 
-    const buccalImplantImages = [I1, I2, I3, I4, I5, I6, I7, I8, I9, I10, I11, I12, I13, I14, I15, I16];
+
+    const lowerLingualImplant = [LLI1, LLI2, LLI3, LLI4, LLI5, LLI6, LLI7, LLI8, LLI9, LLI10, LLI11, LLI12, LLI13, LLI14, LLI15, LLI16];
 
     const toggleBleedingStatus = (toothIndex, position) => {
         setBleedingStatus((prev) => {
@@ -159,7 +181,7 @@ const LowerLingualTable = () => {
                         key={index}
                         className={`w-full border  h-full ${index === 7 ? 'mr-[25px]' : ''}`}
                     >
-                        <div className="flex h-10 justify-center items-center">{index + 17}</div>
+                        <div className="flex h-10 border-b-2 justify-center items-center">{index + 17}</div>
 
                         <div className="flex h-10 justify-center items-center py-1">
                             <input type="text" className='w-16 rounded-md' />
@@ -253,15 +275,15 @@ const LowerLingualTable = () => {
 
 
                             ))}
-                         
-                        
+
+
 
                             {/* Conditional Image Rendering */}
                             {toothPresence[index] === 'P' ? (
                                 <div className="relative flex gap-2 mt-7 justify-center items-center py-1">
                                     {/* Show Buccal Image for 'Present' */}
                                     <img
-                                        src={buccalImages[index]}
+                                        src={lowerLingual[index]}
                                         alt={`Buccal ${index + 1}`}
                                         className="relative w-12 top-6 h-[6rem] z-0"
                                     />
@@ -270,7 +292,7 @@ const LowerLingualTable = () => {
                                 <div className="relative flex gap-2 justify-center items-center py-1">
                                     {/* Show Implant Image for 'Implant' */}
                                     <img
-                                        src={I1png}
+                                        src={lowerLingualImplant[index]}
                                         alt={`Implant ${index + 1}`}
                                         className="relative w-12 top-6 h-[5rem] z-0"
                                     />

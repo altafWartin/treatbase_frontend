@@ -6,6 +6,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import MicSpeakingEffect from "./MicSpeakingEffect";
 
 export default function PatientDetails() {
     const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ export default function PatientDetails() {
     });
     const currentDate = new Date(); // Get the current date
 
+    const [isRecording, setIsRecording] = useState(false);
 
     const [recording, setRecording] = useState(false);
     const [audioBlob, setAudioBlob] = useState(null);
@@ -57,96 +59,98 @@ export default function PatientDetails() {
             alert("Audio recording is not supported in this browser.");
             return;
         }
-
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mediaRecorder = new MediaRecorder(stream);
-        const audioChunks = [];
-        const audioContext = new AudioContext();
-        const source = audioContext.createMediaStreamSource(stream);
-        const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-
-        source.connect(analyser);
-        const dataArray = new Uint8Array(analyser.fftSize);
-        let silenceTimer = null;
-
-        let manualStop = false; // State to track manual stop
-
-        setRecording(true); // Set recording state to true
-
-        const sendAudioChunkInBackground = async (audioBlob) => {
-            // Background upload
-            handleUpload(audioBlob).catch((error) => {
-                console.error("Error uploading audio chunk:", error);
-            });
-        };
-
-        const checkSilence = () => {
-            analyser.getByteFrequencyData(dataArray);
-            const volume = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-
-            if (volume < 10) {
-                // Silence detected
-                if (!silenceTimer) {
-                    silenceTimer = setTimeout(() => {
-                        mediaRecorder.stop(); // Stop current recording
-                    }, 1000); // 1 second silence threshold
+        setIsRecording(true);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            const audioChunks = [];
+            const audioContext = new AudioContext();
+            const source = audioContext.createMediaStreamSource(stream);
+            const analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+    
+            source.connect(analyser);
+            const dataArray = new Uint8Array(analyser.fftSize);
+            let silenceTimer = null;
+            let manualStop = false; // Track manual stop
+    
+            setRecording(true);
+    
+            const sendAudioChunkInBackground = async (audioBlob) => {
+                handleUpload(audioBlob).catch((error) => {
+                    console.error("Error uploading audio chunk:", error);
+                });
+            };
+    
+            const checkSilence = () => {
+                analyser.getByteFrequencyData(dataArray);
+                const volume = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+    
+                if (volume < 10) {
+                    if (!silenceTimer) {
+                        silenceTimer = setTimeout(() => {
+                            mediaRecorder.stop(); // Stop recording on silence
+                        }, 1000);
+                    }
+                } else {
+                    if (silenceTimer) {
+                        clearTimeout(silenceTimer);
+                        silenceTimer = null;
+                    }
                 }
-            } else {
-                // Sound detected, clear silence timer
-                if (silenceTimer) {
-                    clearTimeout(silenceTimer);
-                    silenceTimer = null;
+    
+                if (mediaRecorder.state === "recording") {
+                    requestAnimationFrame(checkSilence);
                 }
-            }
-
-            if (mediaRecorder.state === "recording") {
-                requestAnimationFrame(checkSilence); // Continue checking for silence
-            }
-        };
-
-        mediaRecorder.ondataavailable = (event) => {
-            audioChunks.push(event.data);
-        };
-
-        mediaRecorder.onstop = () => {
-            // Send audio chunk in the background
-            if (audioChunks.length > 0) {
-                const audioBlob = new Blob(audioChunks, { type: "audio/mpeg" });
-                sendAudioChunkInBackground(audioBlob); // Upload in the background
-                audioChunks.length = 0; // Clear audio chunks
-            }
-
-            if (!manualStop) {
-                // Restart recording automatically if not manually stopped
-                mediaRecorder.start();
-                checkSilence();
-            }
-        };
-
-        mediaRecorder.start(); // Start the initial recording
-        checkSilence(); // Start silence detection
-
-        // Manual stop function
-        const handleManualStop = () => {
-            manualStop = true; // Mark as manually stopped
-            setRecording(false); // Update state to reflect stopped recording
-            mediaRecorder.stop(); // Stop recording
-            stream.getTracks().forEach((track) => track.stop()); // Stop the microphone stream
-            audioContext.close(); // Close the audio context
-        };
-
-        // Attach the stop function to a button or UI event
-        window.handleStopRecording = handleManualStop;
+            };
+    
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+    
+            mediaRecorder.onstop = () => {
+                if (audioChunks.length > 0) {
+                    const audioBlob = new Blob(audioChunks, { type: "audio/mpeg" });
+                    sendAudioChunkInBackground(audioBlob);
+                    audioChunks.length = 0; // Clear chunks
+                }
+    
+                if (!manualStop) {
+                    mediaRecorder.start(); // Restart recording
+                    checkSilence();
+                }
+            };
+    
+            mediaRecorder.start();
+            checkSilence();
+    
+            const handleManualStop = () => {
+                manualStop = true;
+                setRecording(false);
+                mediaRecorder.stop();
+                stream.getTracks().forEach((track) => track.stop());
+                audioContext.close();
+            };
+    
+            window.handleStopRecording = handleManualStop; // Attach to global for external call
+        } catch (error) {
+            console.error("Error starting recording:", error);
+            alert("Failed to start recording. Check your microphone permissions.");
+        }
     };
-
-
-
+    
     const handleStopRecording = () => {
-        console.log("30. handleStopRecording called, setting recording to false");
-        setRecording(false); // This will stop the automatic loop of starting new recordings
+        console.log("Recording stopped");
+        setIsRecording(false);
+        setRecording(false);
+        // Add your stop recording logic here
     };
+    
 
+   
+ 
+
+    
     const handleUpload = async (audioBlob) => {
         console.log("31. Start function handleUpload");
 
@@ -207,6 +211,7 @@ export default function PatientDetails() {
             const data = response.data;
 
             calculateAge(data.date_of_birth);
+
             setFormData((prev) => ({
                 ...prev,
                 firstName: data.first_name || "",
@@ -235,24 +240,16 @@ export default function PatientDetails() {
         { value: "other", label: "Other" },
     ];
 
-
-
     return (
         <form
             className="flex flex-col w-full max-w-[65rem] mt-40 px-8 py-6 bg-sky-100 rounded-xl sm:mx-4 max-md:px-4 max-sm:px-2 mx-4"
         >
-            <div className=" fixed z-50 flex justify-end items-center w-16 h-16   right-20">
-                <button
-                    type="button"
-                    onClick={recording ? handleStopRecording : handleStartRecording}
-                    className={`w-16 h-16 flex items-center justify-center ${recording ? "bg-red-500" : "bg-blue-500"
-                        } text-white px-4 py-2 rounded-full hover:bg-blue-700 disabled:opacity-50 gap-2 shadow-lg`}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-mic" viewBox="0 0 16 16">
-                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
-                        <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3" />
-                    </svg>
-                </button>
+            <div className=" fixed z-50 flex justify-end items-center w-16 h-16   right-3">
+            <MicSpeakingEffect
+                isRecording={isRecording}
+                onStartRecording={handleStartRecording}
+                onStopRecording={handleStopRecording}
+            />
 
             </div>
 

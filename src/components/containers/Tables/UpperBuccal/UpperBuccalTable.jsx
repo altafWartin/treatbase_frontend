@@ -34,14 +34,14 @@ import I13 from "../../../../assets/UpparBuccal/I13.svg";
 import I14 from "../../../../assets/UpparBuccal/I14.svg";
 import I15 from "../../../../assets/UpparBuccal/I15.svg";
 import I16 from "../../../../assets/UpparBuccal/I16.svg";
-
-import I1png from "../../../../assets/UpparBuccal/I1png.png";
-
+import ToothGrid from './ToothGrid';
 
 
 
-const UpperBuccalTable = () => {
-    const [toothPresence, setToothPresence] = useState(Array(16).fill('P'));
+
+
+const UpperBuccalTable = ( { toothPresence, setToothPresence }) => {
+    // const [toothPresence, setToothPresence] = useState(Array(16).fill('P'));
     const [furcationStatus, setFurcationStatus] = useState(Array(16).fill(''));
     const [bleedingStatus, setBleedingStatus] = useState(
         Array(16).fill({
@@ -103,7 +103,24 @@ const UpperBuccalTable = () => {
         Buccal16,
     ];
 
-    const buccalImplantImages = [I1, I2, I3, I4, I5, I6, I7, I8, I9, I10, I11, I12, I13, I14, I15, I16];
+    const buccalImplantImages = [
+        { src: I1, className: " top-7" },
+        { src: I2, className: " top-8" },
+        { src: I3, className: " top-8" },
+        { src: I4, className: " top-8" },
+        { src: I5, className: " top-8" },
+        { src: I6, className: " top-10" },
+        { src: I7, className: " top-9" },
+        { src: I8, className: " top-10" },
+        { src: I9, className: " top-[2.7rem]" },
+        { src: I10, className: " top-9" },
+        { src: I11, className: " top-10" },
+        { src: I12, className: " top-8" },
+        { src: I13, className: " top-8" },
+        { src: I14, className: " top-8" },
+        { src: I15, className: " top-8" },
+        { src: I16, className: " top-8" },
+    ];
 
     const toggleBleedingStatus = (toothIndex, position) => {
         setBleedingStatus((prev) => {
@@ -162,7 +179,7 @@ const UpperBuccalTable = () => {
                         key={index}
                         className={`w-full border  h-full ${index === 7 ? 'mr-[25px]' : ''}`}
                     >
-                        <div className="flex h-10 justify-center items-center">{index + 1}</div>
+                        <div className="flex h-10 border-b-2 justify-center items-center">{index + 1}</div>
 
                         <div className="flex h-10 justify-center items-center py-1">
                             <button
@@ -251,14 +268,7 @@ const UpperBuccalTable = () => {
                             ))}
                         </div>
 
-                        <div className="relative flex flex-col my-5 justify-center items-center py-1 " style={{ height: '90px' }}>
-
-
-                            {/* Render Static Grid Lines */}
-
-
-
-
+                        {/* <div className="relative flex flex-col my-5 justify-center items-center py-1 " style={{ height: '90px' }}>
                             {Array.from({ length: 17 }).map((_, idx) => (
                                 <hr
                                     key={idx}
@@ -268,13 +278,8 @@ const UpperBuccalTable = () => {
 
 
                             ))}
-                       
-                         
-
-                            {/* Conditional Image Rendering */}
                             {toothPresence[index] === 'P' ? (
                                 <div className="relative flex gap-2 mt-7 justify-center items-center py-1">
-                                    {/* Show Buccal Image for 'Present' */}
                                     <img
                                         src={buccalImages[index]}
                                         alt={`Buccal ${index + 1}`}
@@ -283,20 +288,26 @@ const UpperBuccalTable = () => {
                                 </div>
                             ) : toothPresence[index] === 'I' ? (
                                 <div className="relative flex gap-2 justify-center items-center py-1">
-                                    {/* Show Implant Image for 'Implant' */}
                                     <img
-                                        src={I1png}
+                                        src={buccalImplantImages[index].src}
                                         alt={`Implant ${index + 1}`}
-                                        className="relative w-12 top-6 h-[5rem] z-0"
+                                        className={`relative w-12  h-[6rem] z-0 ${buccalImplantImages[index].className}`}
                                     />
+
                                 </div>
                             ) : (
                                 <div className="relative flex gap-2 justify-center items-center py-1">
-                                    {/* Hide Both Images for 'Missing' */}
                                 </div>
                             )}
-                        </div>
-                      
+                        </div> */}
+
+                        <ToothGrid
+                            key={index}
+                            toothPresence={toothPresence}
+                            index={index}
+                            buccalImages={buccalImages}
+                            buccalImplantImages={buccalImplantImages}
+                        />
 
                     </div>
                 ))}
