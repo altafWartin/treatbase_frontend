@@ -144,7 +144,7 @@ export default function PatientDetails() {
         <form
             className="flex flex-col w-full max-w-[65rem] mt-40 px-8 py-6 bg-sky-100 rounded-xl sm:mx-4 max-md:px-4 max-sm:px-2 mx-4"
         >
-            <div className="fixed z-50 flex justify-end items-center w-16 h-16 right-20">
+            <div className="fixed z-50 flex justify-end items-center w-16 h-16 right-5">
                 <button
                     type="button"
                     onClick={handleStartStopRecording}

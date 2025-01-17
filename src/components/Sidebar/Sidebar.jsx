@@ -182,11 +182,16 @@ function SideNavigation() {
       {/* Mobile Sidebar */}
       <div className="md:hidden ">
         <button
-          className="fixed top-20 left-4 z-[99999] bg-gray-100 p-2 rounded"
+          className="fixed top-4 left-[21rem] z-[99999] bg-gray-100 p-2 rounded"
           onClick={toggleMobileSidebar}
           aria-label={mobileSidebarOpen ? "Close sidebar" : "Open sidebar"}
         >
-          ☰
+          {
+            mobileSidebarOpen ? (<>   ✖
+            </>):(<>  ☰
+            </>)
+          }
+         
         </button>
         <nav
           className={`fixed top-0 pt-28 px-16 left-0 w-full h-full bg-white shadow-lg transform transition-transform z-[999] ${
@@ -195,13 +200,7 @@ function SideNavigation() {
           role="navigation"
           aria-label="Mobile navigation"
         >
-          <button
-            className="absolute top-20 right-4 bg-gray-100 p-2 rounded"
-            onClick={toggleMobileSidebar}
-            aria-label="Close sidebar"
-          >
-            ✖
-          </button>
+         
           {/* Navigation Items */}
           {navigationItems.map((item) => (
             <NavigationItem

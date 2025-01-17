@@ -12,7 +12,10 @@ const Home = () => {
 
         <PropertyIndexTable />
 
-        <MainTable />
+        <div className="w-full  ">
+          <MainTable />
+        </div>
+
 
 
       </div>

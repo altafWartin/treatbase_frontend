@@ -1,106 +1,83 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import UpperBuccalTable from './UpperBuccal/UpperBuccalTable';
 import UpperPalatalTable from './UpperPalatal/UpperPalatalTable';
 import LowerLingualTable from './LowerLingual/LowerLingualTable';
 import LowerBuccalTable from './LowerBuccal/LowerBuccalTable';
+import NameSide from './NameSide';
 
-// Reusable component for header sections
-const HeaderSection = ({ items }) => {
-    return (
-        <div className="flex flex-col justify-center items-end text-sm mr-5">
-            {items.map((item, index) => (
-                <div
-                    key={index}
-                    className="h-10 flex items-center justify-center text-[#1890FF] font-[Montserrat] text-[14px] font-medium leading-[normal]"
-                >
-                    {item}
-                </div>
-            ))}
-        </div>
-    );
-};
+import { ToggleButton } from 'primereact/togglebutton';
+import MyComponent from './MyComponent';
 
-// Reusable component for section titles
-const SectionTitle = ({ title }) => {
-    return (
-        <div className="mt-16 mb-12 text-[#1890FF] font-[Montserrat] text-2xl font-bold leading-[normal]">
-            {title}
-        </div>
-    );
-};
 
-// Reusable component for vertical text labels
-const VerticalTextLabel = ({ labels }) => {
-    return (
-        <div className="w-[5%] h-full flex flex-col justify-center items-center gap-32">
-            {labels.map((label, index) => (
-                <span
-                    key={index}
-                    className="rotate-90 text-[#333] [font-family:Montserrat] text-xl font-bold leading-[normal] tracking-[17.2px]"
-                >
-                    {label}
-                </span>
-            ))}
-        </div>
-    );
-};
 
 const MainTable = () => {
     const [toothPresence, setToothPresence] = useState(Array(16).fill('P'));
+    const [toothPresenceLower, setToothPresenceLower] = useState(Array(16).fill('P'));
+    const [checked, setChecked] = useState(false);
 
-    const upperBuccalHeaders = [
-        'Tooth No',
-        'Tooth Presence',
-        'Mobility',
-        'Furaction',
-        'Gingival Margin',
-        'Probing Depth',
-        'Bleeding on Probing',
-        'Plaque Index'
-    ];
 
-    const buccalHeaders = [
-        'Probing Depth',
-        'Gingival Margin',
-        'Plaque Index',
-        'Bleeding on Probing',
-        'Furaction',
-        'Note'
-    ];
+
 
     return (
-        <div className="w-full mt-[61px] px-3 mb-24 flex overflow-x-auto">
-            {/* Header Section */}
-            <div className="w-[13%] min-w-[120px]">
-                <HeaderSection items={upperBuccalHeaders} />
+        <div className="w-full mt-[61px] ">
+            {/* Horizontal Scroll Container */}
 
-                {/* Sections Titles */}
-                <SectionTitle title="BUCCAL" />
-                <SectionTitle title="PALATAL" />
-                <HeaderSection items={buccalHeaders} />
-                <SectionTitle title="LINGUAL" />
-                <SectionTitle title="BUCCAL" />
-            </div>
-
-            {/* Content Section */}
-            <div className="w-[82%] min-w-[600px]">
-                <UpperBuccalTable
-                    toothPresence={toothPresence}
-                    setToothPresence={setToothPresence} // Pass the updater function
+            <div className="block sm:hidden card my-4 flex justify-center items-center border-0">
+                <ToggleButton
+                    onLabel="Full view"
+                    offLabel="Mobile view"
+                    checked={checked}
+                    onChange={(e) => setChecked(e.value)}
+                    className="w-[8rem] border-2 rounded-md"
                 />
-                <UpperPalatalTable
-                    toothPresence={toothPresence} // Pass the updated state
-                />
-                <LowerLingualTable />
-                <LowerBuccalTable />
             </div>
 
-            {/* Vertical Labels */}
-            <div className="w-[5%] pt-[27rem] h-full flex flex-col justify-center items-center gap-[45rem]">
-                <VerticalTextLabel labels={['UPPER', 'JAW']} />
-                <VerticalTextLabel labels={['LOWER', 'JAW']} />
+
+
+            <div className="w-full overflow-x-auto">
+                <div className="w-[86rem] flex">
+                    {/* Header Section */}
+                    <div className="w-[10rem]">
+                        <NameSide />
+                    </div>
+
+                    {/* Content Section */}
+                    <div className="w-[72rem]">
+                        <div className="w-full">
+                            <UpperBuccalTable
+                                toothPresence={toothPresence}
+                                setToothPresence={setToothPresence} // Pass the updater function
+                            />
+                            <UpperPalatalTable
+                                toothPresence={toothPresence} // Pass the updated state
+                            />
+                            <LowerLingualTable toothPresenceLower={toothPresenceLower} />
+                            <LowerBuccalTable
+                                toothPresenceLower={toothPresenceLower}
+                                setToothPresenceLower={setToothPresenceLower}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Vertical Labels */}
+                    <div className="w-[3rem]  pt-[27rem] flex flex-col justify-center items-center gap-[45rem]">
+                        <span className="rotate-90 w-[20rem] text-[#333] font-montserrat text-xl font-bold leading-normal tracking-[17.2px]">
+                            UPPER JAW
+                        </span>
+                        <span className="rotate-90 w-[20rem] text-[#333] font-montserrat text-xl font-bold leading-normal tracking-[17.2px]">
+                            LOWER JAW
+                        </span>
+                    </div>
+                </div>
             </div>
+
+            <div className="w-full max-w-[65rem] my-10 lg:ml-[10rem]">
+                <MyComponent />
+            </div>
+
         </div>
+
+
     );
 };
 

@@ -41,8 +41,45 @@ import I1png from "../../../../assets/UpparBuccal/I1png.png";
 import UP1 from "../../../../assets/UpparPalatalImages/UP1.svg";
 
 
-const LowerBuccalTable = () => {
-    const [toothPresence, setToothPresence] = useState(Array(16).fill('P'));
+import LB1 from "../../../../assets/LowerBuccal/LB1.svg";
+import LB2 from "../../../../assets/LowerBuccal/LB2.svg";
+import LB3 from "../../../../assets/LowerBuccal/LB3.svg";
+import LB4 from "../../../../assets/LowerBuccal/LB4.svg";
+import LB5 from "../../../../assets/LowerBuccal/LB5.svg";
+import LB6 from "../../../../assets/LowerBuccal/LB6.svg";
+import LB7 from "../../../../assets/LowerBuccal/LB7.svg";
+import LB8 from "../../../../assets/LowerBuccal/LB8.svg";
+import LB9 from "../../../../assets/LowerBuccal/LB9.svg";
+import LB10 from "../../../../assets/LowerBuccal/LB10.svg";
+import LB11 from "../../../../assets/LowerBuccal/LB11.svg";
+import LB12 from "../../../../assets/LowerBuccal/LB12.svg";
+import LB13 from "../../../../assets/LowerBuccal/LB13.svg";
+import LB14 from "../../../../assets/LowerBuccal/LB14.svg";
+import LB15 from "../../../../assets/LowerBuccal/LB15.svg";
+import LB16 from "../../../../assets/LowerBuccal/LB16.svg";
+
+import LBI1 from "../../../../assets/LowerBuccal/LBI1.svg";
+import LBI2 from "../../../../assets/LowerBuccal/LBI2.svg";
+import LBI3 from "../../../../assets/LowerBuccal/LBI3.svg";
+import LBI4 from "../../../../assets/LowerBuccal/LBI4.svg";
+import LBI5 from "../../../../assets/LowerBuccal/LBI5.svg";
+import LBI6 from "../../../../assets/LowerBuccal/LBI6.svg";
+import LBI7 from "../../../../assets/LowerBuccal/LBI7.svg";
+import LBI8 from "../../../../assets/LowerBuccal/LBI8.svg";
+import LBI9 from "../../../../assets/LowerBuccal/LBI9.svg";
+import LBI10 from "../../../../assets/LowerBuccal/LBI10.svg";
+import LBI11 from "../../../../assets/LowerBuccal/LBI11.svg";
+import LBI12 from "../../../../assets/LowerBuccal/LBI12.svg";
+import LBI13 from "../../../../assets/LowerBuccal/LBI13.svg";
+import LBI14 from "../../../../assets/LowerBuccal/LBI14.svg";
+import LBI15 from "../../../../assets/LowerBuccal/LBI15.svg";
+import LBI16 from "../../../../assets/LowerBuccal/LBI16.svg";
+
+
+
+
+const LowerBuccalTable = ({ toothPresenceLower, setToothPresenceLower }) => {
+    // const [toothPresenceLower, setToothPresenceLower] = useState(Array(16).fill('P'));
     const [furcationStatus, setFurcationStatus] = useState(Array(16).fill(''));
     const [bleedingStatus, setBleedingStatus] = useState(
         Array(16).fill({
@@ -88,24 +125,9 @@ const LowerBuccalTable = () => {
 
     const [directionStatus, setDirectionStatus] = useState(Array(16).fill(''));
 
-    const buccalImages = [Buccal1, Buccal2,
-        Buccal3,
-        Buccal4,
-        Buccal5,
-        Buccal6,
-        Buccal7,
-        Buccal8,
-        Buccal9,
-        Buccal10,
-        Buccal11,
-        Buccal12,
-        Buccal13,
-        Buccal14,
-        Buccal15,
-        Buccal16,
-    ];
+    const LowerBuccalImages = [LB1, LB2, LB3, LB4, LB5, LB6, LB7, LB8, LB9, LB10, LB11, LB12, LB13, LB14, LB15, LB16];
 
-    const buccalImplantImages = [I1, I2, I3, I4, I5, I6, I7, I8, I9, I10, I11, I12, I13, I14, I15, I16];
+    const LowerBuccalImplantImages = [LBI1, LBI2, LBI3, LBI4, LBI5, LBI6, LBI7, LBI8, LBI9, LBI10, LBI11, LBI12, LBI13, LBI14, LBI15, LBI16];
 
     const toggleBleedingStatus = (toothIndex, position) => {
         setBleedingStatus((prev) => {
@@ -119,7 +141,7 @@ const LowerBuccalTable = () => {
     };
 
     const toggleToothPresence = (index) => {
-        setToothPresence((prev) => {
+        setToothPresenceLower((prev) => {
             const updated = [...prev];
             updated[index] =
                 updated[index] === 'P' ? 'M' : updated[index] === 'M' ? 'I' : 'P';
@@ -183,27 +205,28 @@ const LowerBuccalTable = () => {
 
                             ))}
 
-                          
+
                             <div className='absolute w-full h-full z-10'>
 
                                 {/* Conditional Image Rendering */}
-                                {toothPresence[index] === 'P' ? (
+                                {toothPresenceLower[index] === 'P' ? (
                                     <div className="relative flex gap-2 mt-7 justify-center items-center py-1">
                                         {/* Show Buccal Image for 'Present' */}
                                         <img
-                                            // src={buccalImages[index]}
-                                            src={UP1}
+
+                                            src={LowerBuccalImages[index]}
+
                                             alt={`Buccal ${index + 1}`}
                                             className="relative w-12 bottom-[4.5rem] h-[6rem] z-0"
                                         />
                                     </div>
-                                ) : toothPresence[index] === 'I' ? (
+                                ) : toothPresenceLower[index] === 'I' ? (
                                     <div className="relative flex gap-2 justify-center items-center py-1">
                                         {/* Show Implant Image for 'Implant' */}
                                         <img
-                                            src={I1png}
+                                            src={LowerBuccalImplantImages[index]}
                                             alt={`Implant ${index + 1}`}
-                                            className="relative w-12 top-6 h-[5rem] z-0"
+                                            className="relative w-12 bottom-8 h-[5rem] z-0"
                                         />
                                     </div>
                                 ) : (
@@ -295,16 +318,16 @@ const LowerBuccalTable = () => {
                         <div className="flex h-10 justify-center items-center py-1">
                             <button
                                 onClick={() => toggleToothPresence(index)}
-                                className={`flex w-7 h-7 justify-center items-center p-2.5 rounded-[20px] ${toothPresence[index] === 'P'
+                                className={`flex w-7 h-7 justify-center items-center p-2.5 rounded-[20px] ${toothPresenceLower[index] === 'P'
                                     ? '[background:#E6EDFD]' // Blue color for 'P'
-                                    : toothPresence[index] === 'M'
+                                    : toothPresenceLower[index] === 'M'
                                         ? '[background:#FFC2C2]' // Red color for 'M'
-                                        : toothPresence[index] === 'I'
+                                        : toothPresenceLower[index] === 'I'
                                             ? '[background:#D9D9D9]' // Gray color for 'I'
                                             : ''
                                     }`}
                             >
-                                {toothPresence[index]}
+                                {toothPresenceLower[index]}
                             </button>
                         </div>
                     </div>
