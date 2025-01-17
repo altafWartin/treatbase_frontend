@@ -12,7 +12,7 @@ export default function PatientDetails() {
         firstName: "",
         lastName: "",
         date: new Date(),
-        dateOfBirth: "",
+        dateOfBirth: "",           
         age: "",
         gender: "",
         preOp: false,
